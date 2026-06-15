@@ -44,6 +44,6 @@ export const proxy = auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*|swe-worker-.*).*)",
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|icons|manifest.json|progress-samples|sw.js|workbox-.*|swe-worker-.*).*)",
   ],
 };
