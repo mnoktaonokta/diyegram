@@ -17,6 +17,7 @@ import { MEAL_TYPE_LABELS } from "@/lib/mock/client-data";
 import type { DietitianFeedPost } from "@/lib/mock/dietitian-data";
 import { QUICK_COMMENT_TEMPLATES } from "@/lib/mock/dietitian-data";
 import { cn } from "@/lib/utils";
+import { getValidImageUrls } from "@/lib/utils/image-src";
 
 export function FeedCard({
   post,
@@ -38,6 +39,8 @@ export function FeedCard({
     setFeedback(post.feedback);
   }, [post.feedback, post.id]);
   const isCheat = post.isCheat;
+  const validImages = getValidImageUrls(post.images);
+  const hasImages = validImages.length > 0;
 
   function handleMutate(nextFeedback?: typeof feedback) {
     if (nextFeedback) {
@@ -140,11 +143,13 @@ export function FeedCard({
         </div>
       )}
 
-      <ImageCarousel
-        images={post.images}
-        altPrefix={`${post.clientName} ${post.mealType}`}
-        aspectClass={compact ? "aspect-square" : "aspect-[4/3]"}
-      />
+      {hasImages ? (
+        <ImageCarousel
+          images={post.images}
+          altPrefix={`${post.clientName} ${post.mealType}`}
+          aspectClass={compact ? "aspect-square" : "aspect-[4/3]"}
+        />
+      ) : null}
 
       {post.note ? (
         <p className="px-4 py-3 text-sm leading-relaxed text-slate-700 dark:text-zinc-300">
