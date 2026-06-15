@@ -11,6 +11,12 @@ export function resolveImageSrc(
   return fallbackTrimmed || null;
 }
 
+export function getValidImageUrls(images: string[]): string[] {
+  return images
+    .map((image) => resolveImageSrc(image))
+    .filter((image): image is string => Boolean(image));
+}
+
 export function shouldSkipImageOptimization(src: string) {
   return (
     src.startsWith("data:") ||

@@ -8,6 +8,7 @@ import { MealCommentThread } from "@/components/shared/meal-comment-thread";
 import { ImageCarousel } from "@/components/shared/image-carousel";
 import { Heart, ThumbsDown, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getValidImageUrls } from "@/lib/utils/image-src";
 
 export function MealPostCard({
   post,
@@ -22,6 +23,8 @@ export function MealPostCard({
 }) {
   const feedback = post.feedback ?? "PENDING";
   const dietitian = useDietitianSocialProfile();
+  const validImages = getValidImageUrls(post.images);
+  const hasImages = validImages.length > 0;
 
   return (
     <article
@@ -55,13 +58,15 @@ export function MealPostCard({
         </button>
       ) : null}
 
-      <ImageCarousel images={post.images} altPrefix={post.mealType} />
+      {hasImages ? (
+        <ImageCarousel images={post.images} altPrefix={post.mealType} />
+      ) : null}
 
       <div className="flex items-center justify-between px-4 py-3">
         <p className="text-xs text-slate-500 dark:text-zinc-400">{post.time}</p>
-        {post.images.length > 1 ? (
+        {validImages.length > 1 ? (
           <p className="text-xs text-slate-400 dark:text-zinc-500">
-            {post.images.length} fotoğraf
+            {validImages.length} fotoğraf
           </p>
         ) : null}
       </div>

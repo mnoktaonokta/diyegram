@@ -10,7 +10,10 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { resolveImageSrc, shouldSkipImageOptimization } from "@/lib/utils/image-src";
+import {
+  getValidImageUrls,
+  shouldSkipImageOptimization,
+} from "@/lib/utils/image-src";
 
 export function ImageCarousel({
   images,
@@ -21,9 +24,7 @@ export function ImageCarousel({
   altPrefix: string;
   aspectClass?: string;
 }) {
-  const validImages = images
-    .map((image) => resolveImageSrc(image))
-    .filter((image): image is string => Boolean(image));
+  const validImages = getValidImageUrls(images);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const count = validImages.length;
