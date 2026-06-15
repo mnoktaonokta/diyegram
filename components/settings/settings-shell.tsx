@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-import { ProfileMenu } from "@/components/auth/profile-menu";
+import { ClientBottomBar } from "@/components/client/client-bottom-bar";
+import { DietitianBottomBar } from "@/components/dietitian/dietitian-bottom-bar";
 import { useUserProfile } from "@/components/providers/user-profile-provider";
+import { HeaderUserAvatar } from "@/components/shared/header-user-avatar";
 import { getRoleHomePath, type Role } from "@/types/role";
 
 export function SettingsShell({
@@ -45,15 +47,14 @@ export function SettingsShell({
               </p>
             </div>
           </div>
-          <ProfileMenu
+          <HeaderUserAvatar
             name={displayName || userName}
-            email={userEmail}
             avatarUrl={profileAvatarUrl || avatarUrl}
-            settingsHref="/settings"
           />
         </div>
       </header>
-      <main className="flex-1 px-4 py-5 pb-8">{children}</main>
+      <main className="flex-1 px-4 py-5 pb-24">{children}</main>
+      {role === "CLIENT" ? <ClientBottomBar /> : <DietitianBottomBar />}
     </div>
   );
 }

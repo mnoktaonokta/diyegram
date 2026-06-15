@@ -2,8 +2,9 @@
 
 import type { ReactNode } from "react";
 
-import { ProfileMenu } from "@/components/auth/profile-menu";
+import { DietitianBottomBar } from "@/components/dietitian/dietitian-bottom-bar";
 import { DietitianInviteButton } from "@/components/dietitian/dietitian-invite-button";
+import { HeaderUserAvatar } from "@/components/shared/header-user-avatar";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 import { DietitianFeedHeader } from "@/components/dietitian/dietitian-feed-header";
 import { useUserProfile } from "@/components/providers/user-profile-provider";
@@ -48,16 +49,15 @@ export function DietitianShell({
           <div className="flex shrink-0 items-center gap-1">
             <DietitianInviteButton />
             <NotificationCenter audience="DIETITIAN" />
-            <ProfileMenu
+            <HeaderUserAvatar
               name={displayName || userName}
-              email={userEmail}
               avatarUrl={profileAvatarUrl}
-              socialProfileHref="/dietitian/profile"
             />
           </div>
         </header>
       )}
-      <main className="flex-1 pb-6">{children}</main>
+      <main className="flex-1 pb-24">{children}</main>
+      <DietitianBottomBar />
     </div>
   );
 }

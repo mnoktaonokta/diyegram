@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 
-import { ProfileMenu } from "@/components/auth/profile-menu";
 import { DietitianInviteButton } from "@/components/dietitian/dietitian-invite-button";
+import { HeaderUserAvatar } from "@/components/shared/header-user-avatar";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 import { useDietitianFeedFilter } from "@/components/dietitian/feed/dietitian-feed-filter-provider";
 import { useProfileRevisionValue, useUserProfile } from "@/components/providers/user-profile-provider";
@@ -102,11 +102,9 @@ export function DietitianFeedHeader({
           </button>
           <DietitianInviteButton />
           <NotificationCenter audience="DIETITIAN" />
-          <ProfileMenu
+          <HeaderUserAvatar
             name={displayName || userName}
-            email={userEmail}
             avatarUrl={profileAvatarUrl || avatarUrl}
-            socialProfileHref="/dietitian/profile"
           />
         </div>
       </div>

@@ -3,16 +3,14 @@
 import Link from "next/link";
 
 import { NotificationCenter } from "@/components/notifications/notification-center";
-import { ProfileMenu } from "@/components/auth/profile-menu";
 import { useUserProfile } from "@/components/providers/user-profile-provider";
+import { HeaderUserAvatar } from "@/components/shared/header-user-avatar";
 import { useDietitianSocialProfile } from "@/components/dietitian/social/use-dietitian-social-profile";
 
 export function ClientHeader({
   userName,
-  userEmail,
 }: {
   userName: string;
-  userEmail?: string | null;
 }) {
   const { firstName, displayName, avatarUrl: profileAvatarUrl, isLoading } =
     useUserProfile();
@@ -40,9 +38,8 @@ export function ClientHeader({
       </div>
       <div className="flex shrink-0 items-center gap-1">
         <NotificationCenter audience="CLIENT" />
-        <ProfileMenu
+        <HeaderUserAvatar
           name={displayName || userName}
-          email={userEmail}
           avatarUrl={profileAvatarUrl}
         />
       </div>
