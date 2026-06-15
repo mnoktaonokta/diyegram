@@ -9,10 +9,10 @@ export function AppLoginLogo({ className }: { className?: string }) {
     <Image
       src={APP_LOGIN_LOGO_SRC}
       alt="Diyegram"
-      width={224}
-      height={96}
+      width={320}
+      height={140}
       priority
-      className={cn("mx-auto h-auto w-52 object-contain", className)}
+      className={cn("mx-auto h-auto w-64 object-contain md:w-80", className)}
       unoptimized={shouldSkipImageOptimization(APP_LOGIN_LOGO_SRC)}
     />
   );
