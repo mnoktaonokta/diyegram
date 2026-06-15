@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 
 import { DietitianInviteButton } from "@/components/dietitian/dietitian-invite-button";
+import { AppHeaderLogo } from "@/components/shared/app-header-logo";
 import { HeaderUserAvatar } from "@/components/shared/header-user-avatar";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 import { useDietitianFeedFilter } from "@/components/dietitian/feed/dietitian-feed-filter-provider";
@@ -52,14 +53,7 @@ export function DietitianFeedHeader({
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-slate-50/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95">
       <div className="flex items-center justify-between gap-3 px-4 py-3">
-        <div className="min-w-0">
-          <p className="text-lg font-bold tracking-tight text-teal-600 dark:text-teal-400">
-            Diyegram
-          </p>
-          <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Danışan Akışı
-          </p>
-        </div>
+        <AppHeaderLogo />
 
         <div className="flex shrink-0 items-center gap-1">
           <button

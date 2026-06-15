@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { DietitianBottomBar } from "@/components/dietitian/dietitian-bottom-bar";
 import { DietitianInviteButton } from "@/components/dietitian/dietitian-invite-button";
+import { AppHeaderLogo } from "@/components/shared/app-header-logo";
 import { HeaderUserAvatar } from "@/components/shared/header-user-avatar";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 import { DietitianFeedHeader } from "@/components/dietitian/dietitian-feed-header";
@@ -38,12 +39,10 @@ export function DietitianShell({
         />
       ) : (
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/80 bg-slate-50/95 px-4 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95">
-          <div className="min-w-0 flex-1 pr-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3 pr-3">
+            <AppHeaderLogo />
             <p className="truncate text-base font-bold text-slate-800 dark:text-zinc-100">
               {title}
-            </p>
-            <p className="text-xs text-slate-500 dark:text-zinc-400">
-              Diyegram · Diyetisyen Paneli
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
