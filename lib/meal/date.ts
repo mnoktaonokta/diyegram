@@ -1,0 +1,12 @@
+import { parseDateKey } from "@/lib/utils/calendar";
+
+export function dateKeyToDate(dateKey: string) {
+  return parseDateKey(dateKey);
+}
+
+export function dateToDateKey(date: Date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}

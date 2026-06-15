@@ -1,0 +1,232 @@
+// Diyegram — PostgreSQL veritabanı şeması
+// Mock tipler: lib/mock/client-data.ts, lib/types/*
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  DIETITIAN
+  CLIENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  SNACK_1
+  DINNER
+  SNACK_2
+}
+
+enum FeedbackStatus {
+  LIKED
+  DISLIKED
+  PENDING
+}
+
+enum CommentAuthorRole {
+  CLIENT
+  DIETITIAN
+}
+
+// ─── User (Diyetisyen & Danışan) ─────────────────────────────────────────────
+// Karşılık: UserProfileSettings + ClientClinicalState + MeasurementSnapshot
+
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+
+  firstName String
+  lastName  String
+  role      Role
+
+  // Profil (lib/types/user-profile.ts)
+  age       Int?
+  height    Float? // cm
+  gender    Gender?
+  avatarUrl String?
+
+  // Diyetisyen sosyal profil (lib/types/dietitian-social.ts)
+  professionalTitle String?
+  bio               String? @db.Text
+
+  // Danışan klinik durumu (lib/storage/client-clinical-storage.ts)
+  programStartedAt      DateTime? @db.Date
+  startWeight           Float?
+  startFatPercentage    Float?
+  previousWeight        Float?
+  previousFatPercentage Float?
+  currentWeight         Float?
+  currentFatPercentage  Float?
+  targetWeight          Float?
+  targetFatPercentage   Float?
+  nextAppointmentDate   DateTime? @db.Date
+
+  // Danışan ↔ Diyetisyen eşlemesi
+  assignedDietitianId String?
+  assignedDietitian   User?  @relation("ClientDietitian", fields: [assignedDietitianId], references: [id], onDelete: SetNull)
+  clients             User[] @relation("ClientDietitian")
+
+  // İlişkiler
+  mealPosts       MealPost[]
+  comments        Comment[]
+  progressRecords Progress[]
+  progressPhotos  ProgressPhoto[]
+  dailyActivities DailyActivity[]
+  dailyExercises  DailyExercise[]
+  dietitianPosts  DietitianPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([assignedDietitianId])
+}
+
+// ─── MealPost (Öğün gönderileri) ─────────────────────────────────────────────
+// Karşılık: ClientMealPost (lib/mock/client-data.ts)
+
+model MealPost {
+  id                String         @id @default(cuid())
+  userId            String
+  mealType          MealType
+  isCheat           Boolean        @default(false)
+  isUserCreated     Boolean        @default(true)
+  date              DateTime       @db.Date
+  time              String? // "08:15"
+  images            String[]
+  note              String?        @db.Text
+  dietitianFeedback FeedbackStatus @default(PENDING)
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, mealType, isCheat])
+}
+
+// ─── Comment (Öğün yorumları) ────────────────────────────────────────────────
+// Karşılık: MealComment (lib/types/meal-comments.ts)
+
+model Comment {
+  id         String            @id @default(cuid())
+  mealPostId String
+  authorId   String?
+  authorRole CommentAuthorRole
+  authorName String
+  text       String            @db.Text
+
+  mealPost MealPost @relation(fields: [mealPostId], references: [id], onDelete: Cascade)
+  author   User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([mealPostId, createdAt])
+}
+
+// ─── Progress (Kilo / yağ geçmişi) ───────────────────────────────────────────
+// Karşılık: ProgressHistoryPoint (lib/mock/client-data.ts)
+
+model Progress {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime @db.Date
+  weight        Float
+  fatPercentage Float
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+// ─── ProgressPhoto (Görsel gelişim) ──────────────────────────────────────────
+// Karşılık: ProgressPhoto (lib/types/client-progress.ts)
+
+model ProgressPhoto {
+  id       String   @id @default(cuid())
+  userId   String
+  imageUrl String
+  date     DateTime @db.Date
+  label    String? // ör. "1. Gün", "30. Gün"
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+// ─── DailyActivity (Günlük aktivite özeti) ───────────────────────────────────
+// Karşılık: ProgressDailyActivity + DailyRecord.waterGlasses
+
+model DailyActivity {
+  id              String   @id @default(cuid())
+  userId          String
+  date            DateTime @db.Date
+  steps           Int      @default(0)
+  exerciseMinutes Int      @default(0)
+  waterGlasses    Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+// ─── DailyExercise (Günlük egzersiz kayıtları) ───────────────────────────────
+// Karşılık: DailyExerciseEntry (lib/mock/client-data.ts)
+
+model DailyExercise {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime @db.Date
+  categoryId    String? // WALK | RUN | FITNESS | PILATES | CYCLING
+  categoryLabel String
+  emoji         String
+  detail        String // ör. "45 dk"
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+// ─── DietitianPost (Diyetisyen profil gönderileri) ────────────────────────────
+// Karşılık: DietitianSocialPost (lib/types/dietitian-social.ts)
+
+model DietitianPost {
+  id          String   @id @default(cuid())
+  dietitianId String
+  imageUrls   String[]
+  title       String
+  description String   @db.Text
+
+  dietitian User @relation(fields: [dietitianId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dietitianId, createdAt])
+}

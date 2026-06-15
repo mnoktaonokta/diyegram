@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" role="img" aria-label="Kad1n silüeti">
+  <rect width="120" height="120" rx="60" fill="#FCE7F3"/>
+  <circle cx="60" cy="42" r="20" fill="#F472B6"/>
+  <path d="M28 104c4-20 20-32 32-32s28 12 32 32" fill="#F472B6"/>
+  <path d="M44 78c6 6 26 6 32 0" stroke="#FBCFE8" stroke-width="4" stroke-linecap="round"/>
+</svg>
