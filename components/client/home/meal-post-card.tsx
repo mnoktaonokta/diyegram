@@ -1,6 +1,7 @@
 "use client";
 
 import { useDietitianSocialProfile } from "@/components/dietitian/social/use-dietitian-social-profile";
+import { useUserProfile } from "@/components/providers/user-profile-provider";
 import type { ClientMealPost } from "@/lib/mock/client-data";
 import { CLIENT_QUICK_COMMENT_TEMPLATES } from "@/lib/mock/dietitian-data";
 
@@ -23,6 +24,8 @@ export function MealPostCard({
 }) {
   const feedback = post.feedback ?? "PENDING";
   const dietitian = useDietitianSocialProfile();
+  const { firstName, displayName } = useUserProfile();
+  const currentAuthorName = firstName || displayName || "Danışan";
   const validImages = getValidImageUrls(post.images);
   const hasImages = validImages.length > 0;
 
@@ -99,6 +102,7 @@ export function MealPostCard({
         onAddComment={onAddComment}
         quickTemplates={CLIENT_QUICK_COMMENT_TEMPLATES}
         currentAuthorRole="CLIENT"
+        currentAuthorName={currentAuthorName}
         dietitianProfileHref="/client/dietitian-profile"
         dietitianAvatarUrl={
           dietitian.avatarUrl.trim() || undefined

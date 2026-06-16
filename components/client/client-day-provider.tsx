@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import {
@@ -34,6 +35,7 @@ import {
   type DailyRecord,
 } from "@/lib/mock/client-data";
 import type { CommentAuthorRole } from "@/lib/types/meal-comments";
+import { createMealComment } from "@/lib/types/meal-comments";
 import { todayKey, type WeekDay } from "@/lib/utils/calendar";
 
 type AddExerciseInput = Omit<DailyExerciseEntry, "id">;
@@ -96,6 +98,7 @@ const EMPTY_ACTIVITY: Omit<DailyRecord, "meals"> = {
 };
 
 export function ClientDayProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [selectedDate, setSelectedDateState] = useState(todayKey);
   const [meals, setMeals] = useState<ClientMealPost[]>([]);
   const [activity, setActivity] = useState(EMPTY_ACTIVITY);
@@ -315,20 +318,30 @@ export function ClientDayProvider({ children }: { children: ReactNode }) {
       authorName: string,
       date?: unknown,
     ) => {
-      void authorRole;
-      void authorName;
       void date;
 
       const result = await createMealCommentAction(mealId, text);
 
       if (!result.success) {
         toast.error(result.error);
-        return;
+        throw new Error(result.error);
       }
 
-      setMealRefreshToken((token) => token + 1);
+      const newComment = {
+        ...createMealComment(text, authorRole, authorName),
+        id: result.data.id,
+      };
+
+      setMeals((current) =>
+        current.map((meal) =>
+          meal.id === mealId
+            ? { ...meal, comments: [...meal.comments, newComment] }
+            : meal,
+        ),
+      );
+      router.refresh();
     },
-    [],
+    [router],
   );
 
   const openExerciseModal = useCallback(() => {

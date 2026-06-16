@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Heart, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
 
+import { useUserProfile } from "@/components/providers/user-profile-provider";
 import {
   createMealCommentAction,
   updateMealFeedbackAction,
@@ -16,6 +18,7 @@ import { UserAvatar } from "@/components/shared/user-avatar";
 import { MEAL_TYPE_LABELS } from "@/lib/mock/client-data";
 import type { DietitianFeedPost } from "@/lib/mock/dietitian-data";
 import { QUICK_COMMENT_TEMPLATES } from "@/lib/mock/dietitian-data";
+import { createMealComment } from "@/lib/types/meal-comments";
 import { cn } from "@/lib/utils";
 import { getValidImageUrls } from "@/lib/utils/image-src";
 
@@ -32,12 +35,19 @@ export function FeedCard({
   isHighlighted?: boolean;
   onMutate?: () => void;
 }) {
+  const router = useRouter();
+  const { displayName } = useUserProfile();
   const [feedback, setFeedback] = useState(post.feedback);
+  const [comments, setComments] = useState(post.comments);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     setFeedback(post.feedback);
   }, [post.feedback, post.id]);
+
+  useEffect(() => {
+    setComments(post.comments);
+  }, [post.comments, post.id]);
   const isCheat = post.isCheat;
   const validImages = getValidImageUrls(post.images);
   const hasImages = validImages.length > 0;
@@ -49,17 +59,21 @@ export function FeedCard({
     onMutate?.();
   }
 
-  function handleAddComment(text: string) {
-    startTransition(async () => {
-      const result = await createMealCommentAction(post.id, text);
+  async function handleAddComment(text: string) {
+    const result = await createMealCommentAction(post.id, text);
 
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
+    if (!result.success) {
+      toast.error(result.error);
+      throw new Error(result.error);
+    }
 
-      handleMutate();
-    });
+    const newComment = {
+      ...createMealComment(text, "DIETITIAN", displayName || "Diyetisyen"),
+      id: result.data.id,
+    };
+
+    setComments((current) => [...current, newComment]);
+    router.refresh();
   }
 
   function toggleLike() {
@@ -194,10 +208,11 @@ export function FeedCard({
       </div>
 
       <MealCommentThread
-        comments={post.comments}
+        comments={comments}
         onAddComment={handleAddComment}
         quickTemplates={QUICK_COMMENT_TEMPLATES}
         currentAuthorRole="DIETITIAN"
+        currentAuthorName={displayName || "Diyetisyen"}
       />
     </article>
   );

@@ -13,17 +13,22 @@ export function DietitianFeedView() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshToken, setRefreshToken] = useState(0);
 
-  const loadPosts = useCallback(async () => {
-    setIsLoading(true);
+  const loadPosts = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) {
+      setIsLoading(true);
+    }
+
     const result = await getDietitianFeedPostsAction();
 
     if (result.success) {
       setPosts(result.data);
-    } else {
+    } else if (!options?.silent) {
       setPosts([]);
     }
 
-    setIsLoading(false);
+    if (!options?.silent) {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -47,7 +52,7 @@ export function DietitianFeedView() {
     <SocialFeed
       posts={visiblePosts}
       cheatFilterActive={showCheatOnly}
-      onMutate={() => setRefreshToken((token) => token + 1)}
+      onMutate={() => void loadPosts({ silent: true })}
     />
   );
 }

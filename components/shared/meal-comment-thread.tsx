@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Send } from "lucide-react";
 
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { CommentAuthorRole, MealComment } from "@/lib/types/meal-comments";
+import {
+  createMealComment,
+  type CommentAuthorRole,
+  type MealComment,
+} from "@/lib/types/meal-comments";
 import { cn } from "@/lib/utils";
 
 export function MealCommentThread({
@@ -15,15 +19,17 @@ export function MealCommentThread({
   onAddComment,
   quickTemplates = [],
   currentAuthorRole,
+  currentAuthorName,
   className,
   dietitianProfileHref,
   dietitianAvatarUrl,
   dietitianDisplayName = "Diyetisyen",
 }: {
   comments: MealComment[];
-  onAddComment: (text: string) => void;
+  onAddComment: (text: string) => void | Promise<void>;
   quickTemplates?: readonly string[];
   currentAuthorRole: CommentAuthorRole;
+  currentAuthorName: string;
   className?: string;
   dietitianProfileHref?: string;
   dietitianAvatarUrl?: string;
@@ -31,23 +37,65 @@ export function MealCommentThread({
 }) {
   const [draft, setDraft] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [optimisticComments, setOptimisticComments] = useState<MealComment[]>(
+    [],
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function submitComment(text: string) {
+  useEffect(() => {
+    setOptimisticComments((pending) =>
+      pending.filter(
+        (pendingComment) =>
+          !comments.some(
+            (comment) =>
+              comment.id === pendingComment.id ||
+              (comment.text === pendingComment.text &&
+                comment.authorRole === pendingComment.authorRole),
+          ),
+      ),
+    );
+  }, [comments]);
+
+  const visibleComments = [...comments, ...optimisticComments];
+
+  async function submitComment(text: string) {
     const trimmed = text.trim();
-    if (!trimmed) {
+    if (!trimmed || isSubmitting) {
       return;
     }
 
-    onAddComment(trimmed);
+    const optimisticComment = createMealComment(
+      trimmed,
+      currentAuthorRole,
+      currentAuthorName,
+    );
+
+    setOptimisticComments((current) => [...current, optimisticComment]);
     setDraft("");
     setMenuOpen(false);
+    setIsSubmitting(true);
+
+    try {
+      await onAddComment(trimmed);
+    } catch {
+      setOptimisticComments((current) =>
+        current.filter((comment) => comment.id !== optimisticComment.id),
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void submitComment(draft);
   }
 
   return (
     <div className={cn("border-t border-slate-100 dark:border-slate-800", className)}>
-      {comments.length > 0 ? (
+      {visibleComments.length > 0 ? (
         <ul className="space-y-2 px-4 py-3">
-          {comments.map((comment) => {
+          {visibleComments.map((comment) => {
             const isDietitian = comment.authorRole === "DIETITIAN";
 
             return (
@@ -96,7 +144,10 @@ export function MealCommentThread({
         </ul>
       ) : null}
 
-      <div className="flex items-center gap-2 px-4 pb-4 pt-1">
+      <form
+        className="flex items-center gap-2 px-4 pb-4 pt-1"
+        onSubmit={handleSubmit}
+      >
         {quickTemplates.length > 0 ? (
           <div className="relative shrink-0">
             <Button
@@ -128,7 +179,7 @@ export function MealCommentThread({
                     <button
                       key={template}
                       type="button"
-                      onClick={() => submitComment(template)}
+                      onClick={() => void submitComment(template)}
                       className="block w-full px-3 py-2.5 text-left text-xs text-slate-700 transition-colors hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-slate-800"
                     >
                       {template}
@@ -149,24 +200,19 @@ export function MealCommentThread({
               : "Diyetisyene yanıt yaz..."
           }
           className="h-10 flex-1 rounded-2xl"
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              submitComment(draft);
-            }
-          }}
+          disabled={isSubmitting}
         />
 
         <Button
-          type="button"
+          type="submit"
           size="icon"
           className="size-10 shrink-0 rounded-2xl"
-          onClick={() => submitComment(draft)}
+          disabled={isSubmitting || !draft.trim()}
           aria-label="Yorum gönder"
         >
           <Send className="size-4" />
         </Button>
-      </div>
+      </form>
     </div>
   );
 }
