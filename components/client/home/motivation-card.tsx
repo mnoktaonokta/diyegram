@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { Flame } from "lucide-react";
 
 import { ClientDataSkeleton } from "@/components/client/client-data-skeleton";
 import { useClientClinicalData } from "@/components/client/clinical/use-client-clinical-data";
+import { NewDietProgramModal } from "@/components/client/diet/new-diet-program-modal";
 import { MeasurementMetricsGrid } from "@/components/shared/measurement-metrics-grid";
 import { getWeightProgressFromSnapshot } from "@/lib/utils/measurements";
+import { cn } from "@/lib/utils";
 
 function hasActiveProgram(
   motivation: NonNullable<
@@ -21,6 +24,7 @@ function hasActiveProgram(
 
 export function MotivationCard() {
   const { motivation, isLoading } = useClientClinicalData();
+  const [newDietOpen, setNewDietOpen] = useState(false);
 
   if (isLoading || !motivation) {
     return <ClientDataSkeleton className="mx-4 mt-4" rows={4} />;
@@ -28,16 +32,31 @@ export function MotivationCard() {
 
   if (!hasActiveProgram(motivation)) {
     return (
-      <div className="mx-4 mt-4 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-        <p className="text-2xl">🎯</p>
-        <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-zinc-100">
-          Henüz diyet programınız başlamadı
-        </p>
-        <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
-          Diyetim sekmesinden yeni programa başlayın veya diyetisyeninizle ölçüm
-          güncellemesi yapın.
-        </p>
-      </div>
+      <>
+        <button
+          type="button"
+          onClick={() => setNewDietOpen(true)}
+          aria-label="Yeni diyete başla"
+          className={cn(
+            "mx-4 mt-4 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5 text-center shadow-sm",
+            "cursor-pointer transition-all hover:bg-slate-800/50 active:scale-[0.98]",
+            "dark:border-slate-800 dark:bg-slate-900/60",
+          )}
+        >
+          <p className="text-2xl">🎯</p>
+          <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-zinc-100">
+            Henüz diyet programınız başlamadı
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+            Dokunun ve yeni programınızı hemen başlatın
+          </p>
+        </button>
+
+        <NewDietProgramModal
+          open={newDietOpen}
+          onClose={() => setNewDietOpen(false)}
+        />
+      </>
     );
   }
 
