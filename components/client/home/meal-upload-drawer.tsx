@@ -62,14 +62,14 @@ function CheatToggle({
       </span>
       <span
         className={cn(
-          "relative h-6 w-11 rounded-full transition-colors",
+          "relative inline-flex h-6 w-11 shrink-0 overflow-hidden rounded-full p-0.5 transition-colors",
           checked ? "bg-rose-500" : "bg-slate-300 dark:bg-slate-600",
         )}
       >
         <span
           className={cn(
-            "absolute top-0.5 size-5 rounded-full bg-white shadow transition-transform",
-            checked ? "translate-x-5" : "translate-x-0.5",
+            "block size-5 shrink-0 rounded-full bg-white shadow-sm transition-transform",
+            checked ? "translate-x-5" : "translate-x-0",
           )}
         />
       </span>

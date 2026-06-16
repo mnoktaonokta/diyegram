@@ -23,7 +23,7 @@ function Switch({
       disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border border-transparent transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50",
+        "relative inline-flex h-6 w-11 shrink-0 items-center overflow-hidden rounded-full border border-transparent p-0.5 transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50",
         checked ? "bg-teal-500" : "bg-slate-200 dark:bg-slate-700",
         className,
       )}
@@ -31,8 +31,8 @@ function Switch({
     >
       <span
         className={cn(
-          "pointer-events-none block size-5 rounded-full bg-white shadow-sm transition-transform",
-          checked ? "translate-x-6" : "translate-x-1",
+          "pointer-events-none block size-5 shrink-0 rounded-full bg-white shadow-sm transition-transform",
+          checked ? "translate-x-5" : "translate-x-0",
         )}
       />
     </button>
