@@ -4,6 +4,7 @@ import { SettingsPage } from "@/components/settings/settings-page";
 import { SettingsShell } from "@/components/settings/settings-shell";
 import { getDefaultAvatarForGender } from "@/lib/constants/avatars";
 import { mapUserToProfileSettings, resolveProfileAvatarUrl } from "@/lib/profile/mappers";
+import { toImageSrc } from "@/lib/utils/image-src";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
@@ -38,8 +39,8 @@ export default async function SettingsRoutePage() {
     ? mapUserToProfileSettings(user)
     : null;
   const avatarUrl = profile
-    ? resolveProfileAvatarUrl(profile, role)
-    : getDefaultAvatarForGender();
+    ? toImageSrc(resolveProfileAvatarUrl(profile, role))
+    : toImageSrc(getDefaultAvatarForGender());
 
   return (
     <>

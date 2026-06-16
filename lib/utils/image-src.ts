@@ -17,6 +17,22 @@ export function getValidImageUrls(images: string[]): string[] {
     .filter((image): image is string => Boolean(image));
 }
 
+export function isStaticImageData(
+  value: unknown,
+): value is import("next/image").StaticImageData {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "src" in value &&
+    "height" in value &&
+    "width" in value
+  );
+}
+
+export function toImageSrc(value: string | import("next/image").StaticImageData): string {
+  return typeof value === "string" ? value : value.src;
+}
+
 export function resolveProgressImageSrc(
   src: string | null | undefined,
 ): string | null {

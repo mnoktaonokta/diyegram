@@ -11,6 +11,8 @@ import {
   type ReactNode,
 } from "react";
 
+import type { StaticImageData } from "next/image";
+
 import { getProfileAction } from "@/app/actions/profile";
 import { getDefaultAvatarForGender } from "@/lib/constants/avatars";
 import {
@@ -25,7 +27,7 @@ type UserProfileContextValue = {
   profile: UserProfileSettings | null;
   displayName: string;
   firstName: string;
-  avatarUrl: string;
+  avatarUrl: string | StaticImageData;
   profileRevision: number;
   refreshProfile: () => void;
   isLoading: boolean;

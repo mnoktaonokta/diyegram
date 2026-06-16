@@ -20,18 +20,16 @@ export function DietitianFeedHeader({
   clients,
   userName,
   userEmail,
-  avatarUrl,
 }: {
   clients: ClientProfile[];
   userName: string;
   userEmail?: string | null;
-  avatarUrl: string;
 }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { showCheatOnly, toggleCheatOnly } = useDietitianFeedFilter();
   const profileRevision = useProfileRevisionValue();
-  const { displayName, avatarUrl: profileAvatarUrl } = useUserProfile();
+  const { displayName } = useUserProfile();
 
   const results = useMemo(() => {
     if (!query.trim()) {
@@ -96,10 +94,7 @@ export function DietitianFeedHeader({
           </button>
           <DietitianInviteButton />
           <NotificationCenter audience="DIETITIAN" />
-          <HeaderUserAvatar
-            name={displayName || userName}
-            avatarUrl={profileAvatarUrl || avatarUrl}
-          />
+          <HeaderUserAvatar name={displayName || userName} />
         </div>
       </div>
 

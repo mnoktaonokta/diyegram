@@ -1,5 +1,6 @@
 import type { ProgressPhoto } from "@/lib/types/client-progress";
 import type { GenderOption } from "@/lib/types/user-profile";
+import { PROGRESS_SAMPLE_IMAGES } from "@/lib/constants/progress-sample-images";
 import { getProgramDayLabel } from "@/lib/utils/progress-analytics";
 import { parseDateKey } from "@/lib/utils/calendar";
 
@@ -33,19 +34,19 @@ export function getSampleProgressPhotos(
   return [
     {
       id: `sample-${gender}-1`,
-      imageUrl: `/progress-samples/${gender}-1.png`,
+      imageSrc: PROGRESS_SAMPLE_IMAGES[gender][0],
       date: programStartedAt,
       label: "1. Gün",
     },
     {
       id: `sample-${gender}-2`,
-      imageUrl: `/progress-samples/${gender}-2.png`,
+      imageSrc: PROGRESS_SAMPLE_IMAGES[gender][1],
       date: addDaysToDateKey(programStartedAt, 29),
       label: "30. Gün",
     },
     {
       id: `sample-${gender}-3`,
-      imageUrl: `/progress-samples/${gender}-3.png`,
+      imageSrc: PROGRESS_SAMPLE_IMAGES[gender][2],
       date: addDaysToDateKey(programStartedAt, 59),
       label: "60. Gün",
     },

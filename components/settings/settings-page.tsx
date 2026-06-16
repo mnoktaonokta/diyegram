@@ -186,6 +186,7 @@ export function SettingsPage({
             avatarUrl={activeProfile.avatarUrl}
             displayName={formatProfileDisplayName(activeProfile)}
             role={role}
+            gender={activeProfile.gender}
             onAvatarChange={(avatarUrl) =>
               updateProfileField("avatarUrl", avatarUrl)
             }

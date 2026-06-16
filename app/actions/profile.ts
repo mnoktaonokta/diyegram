@@ -13,7 +13,7 @@ import {
 } from "@/lib/profile/mappers";
 import { prisma } from "@/lib/prisma";
 import { deleteUserStorageFolder } from "@/lib/supabase/storage";
-import type { UserProfileSettings } from "@/lib/types/user-profile";
+import type { GenderOption, UserProfileSettings } from "@/lib/types/user-profile";
 
 type ActionResult<T> =
   | { success: true; data: T }
@@ -73,6 +73,51 @@ export async function getProfileAction(): Promise<
   } catch (error) {
     console.error("[getProfileAction]", error);
     return { success: false, error: "Profil yüklenemedi" };
+  }
+}
+
+export async function completeOnboardingAction(input: {
+  age: string;
+  height: string;
+  gender: GenderOption;
+}): Promise<ActionResult<UserProfileSettings>> {
+  try {
+    const session = await requireSession();
+    const parsedAge = parseProfileAge(input.age);
+    const parsedHeight = parseProfileHeight(input.height);
+    const gender = mapGenderToDb(input.gender);
+
+    if (parsedAge == null) {
+      return { success: false, error: "Geçerli bir yaş girin" };
+    }
+
+    if (parsedHeight == null) {
+      return { success: false, error: "Geçerli bir boy girin" };
+    }
+
+    if (!gender) {
+      return { success: false, error: "Cinsiyet seçimi zorunludur" };
+    }
+
+    const user = await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        age: parsedAge,
+        height: parsedHeight,
+        gender,
+      },
+      select: profileSelect,
+    });
+
+    revalidateProfilePaths();
+
+    return {
+      success: true,
+      data: mapUserToProfileSettings(user),
+    };
+  } catch (error) {
+    console.error("[completeOnboardingAction]", error);
+    return { success: false, error: "Profil kaydedilemedi" };
   }
 }
 

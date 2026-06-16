@@ -7,24 +7,25 @@ import { toast } from "sonner";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { getDefaultAvatarForRole } from "@/lib/profile/mappers";
 import { compressAvatarImage } from "@/lib/utils/compress-avatar-image";
+import type { GenderOption } from "@/lib/types/user-profile";
 import type { Role } from "@/types/role";
 
 export function ProfileAvatarUpload({
   avatarUrl,
   displayName,
   role,
+  gender,
   onAvatarChange,
 }: {
   avatarUrl: string;
   displayName: string;
   role: Role;
+  gender?: GenderOption;
   onAvatarChange: (avatarUrl: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const defaultAvatar = getDefaultAvatarForRole(role);
   const hasCustomAvatar = avatarUrl.startsWith("data:");
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -54,7 +55,7 @@ export function ProfileAvatarUpload({
   }
 
   function handleRemove() {
-    onAvatarChange(defaultAvatar);
+    onAvatarChange("");
     toast.success("Profil fotoğrafı kaldırıldı");
   }
 
@@ -62,9 +63,10 @@ export function ProfileAvatarUpload({
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
       <div className="relative size-24 shrink-0 overflow-hidden rounded-full ring-4 ring-teal-500/20">
         <UserAvatar
-          src={avatarUrl}
+          src={avatarUrl || undefined}
           alt={displayName}
           size={96}
+          gender={gender}
         />
       </div>
 

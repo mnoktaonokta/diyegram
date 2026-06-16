@@ -15,12 +15,20 @@ import {
   resolveSampleGender,
 } from "@/lib/mock/progress-sample-photos";
 import type { ProgressPhoto } from "@/lib/types/client-progress";
-import { todayKey } from "@/lib/utils/calendar";
 import {
   resolveProgressImageSrc,
   shouldSkipImageOptimization,
 } from "@/lib/utils/image-src";
+import { todayKey } from "@/lib/utils/calendar";
 import { cn } from "@/lib/utils";
+
+function getProgressPhotoSource(photo: ProgressPhoto) {
+  if (photo.imageSrc) {
+    return photo.imageSrc;
+  }
+
+  return resolveProgressImageSrc(photo.imageUrl);
+}
 
 function ProgressPhotoViewerModal({
   photo,
@@ -37,7 +45,7 @@ function ProgressPhotoViewerModal({
     return null;
   }
 
-  const imageSrc = resolveProgressImageSrc(photo.imageUrl);
+  const imageSrc = getProgressPhotoSource(photo);
 
   if (!imageSrc) {
     return null;
@@ -78,7 +86,10 @@ function ProgressPhotoViewerModal({
                 alt={label}
                 fill
                 className="object-contain"
-                unoptimized={shouldSkipImageOptimization(imageSrc)}
+                unoptimized={
+                  typeof imageSrc === "string" &&
+                  shouldSkipImageOptimization(imageSrc)
+                }
               />
             </div>
           </motion.div>
@@ -185,7 +196,7 @@ export function ProgressVisualGallery({
           <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {displayPhotos.map((photo) => {
               const label = getProgressPhotoLabel(photo, programStartedAt);
-              const imageSrc = resolveProgressImageSrc(photo.imageUrl);
+              const imageSrc = getProgressPhotoSource(photo);
 
               if (!imageSrc) {
                 return null;
@@ -207,7 +218,10 @@ export function ProgressVisualGallery({
                       alt={label}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      unoptimized={shouldSkipImageOptimization(imageSrc)}
+                      unoptimized={
+                        typeof imageSrc === "string" &&
+                        shouldSkipImageOptimization(imageSrc)
+                      }
                     />
                     {showingSamples ? (
                       <span className="absolute left-2 top-2 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-zinc-400 backdrop-blur-sm">

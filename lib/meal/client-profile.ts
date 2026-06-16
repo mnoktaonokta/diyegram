@@ -8,6 +8,7 @@ import {
 } from "@/lib/profile/mappers";
 import { formatTurkishLongDate } from "@/lib/utils/clinical-dates";
 import { formatFeedTimeAgo } from "@/lib/meal/time-ago";
+import { toImageSrc } from "@/lib/utils/image-src";
 
 export async function getClientProfileForDietitian(input: {
   clientId: string;
@@ -65,12 +66,14 @@ export async function getClientProfileForDietitian(input: {
   return {
     id: input.clientId,
     name: name || "Danışan",
-    avatarUrl: resolveProfileAvatarUrl(
-      {
-        avatarUrl: user.avatarUrl ?? "",
-        gender: mapGenderFromDb(user.gender),
-      },
-      "CLIENT",
+    avatarUrl: toImageSrc(
+      resolveProfileAvatarUrl(
+        {
+          avatarUrl: user.avatarUrl ?? "",
+          gender: mapGenderFromDb(user.gender),
+        },
+        "CLIENT",
+      ),
     ),
     personalInfoLabel:
       personalInfoParts.length > 0 ? personalInfoParts.join(" · ") : null,

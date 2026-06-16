@@ -11,8 +11,8 @@ import type { Comment, MealPost, User } from "@/lib/generated/prisma/client";
 
 import { dateToDateKey } from "@/lib/meal/date";
 import { formatFeedTimeAgo } from "@/lib/meal/time-ago";
-import { getDefaultAvatarForGender } from "@/lib/constants/avatars";
 import { resolveProfileAvatarUrl } from "@/lib/profile/mappers";
+import { toImageSrc } from "@/lib/utils/image-src";
 import { sanitizeImageUrls } from "@/lib/types/dietitian-social";
 
 type MealPostWithRelations = MealPost & {
@@ -59,17 +59,19 @@ export function mapMealPostToDietitianFeedPost(
     id: post.id,
     clientId: post.user.id,
     clientName: clientName || "Danışan",
-    clientAvatar: resolveProfileAvatarUrl(
-      {
-        avatarUrl: post.user.avatarUrl ?? "",
-        gender:
-          post.user.gender === "FEMALE"
-            ? "female"
-            : post.user.gender === "MALE"
-              ? "male"
-              : "",
-      },
-      "CLIENT",
+    clientAvatar: toImageSrc(
+      resolveProfileAvatarUrl(
+        {
+          avatarUrl: post.user.avatarUrl ?? "",
+          gender:
+            post.user.gender === "FEMALE"
+              ? "female"
+              : post.user.gender === "MALE"
+                ? "male"
+                : "",
+        },
+        "CLIENT",
+      ),
     ),
     mealType: post.mealType as MealTypeKey,
     isCheat: post.isCheat,

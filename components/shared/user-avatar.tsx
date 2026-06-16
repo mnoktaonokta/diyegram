@@ -1,12 +1,35 @@
+import type { StaticImageData } from "next/image";
 import Image from "next/image";
 
 import { getDefaultAvatarForGender } from "@/lib/constants/avatars";
 import {
+  isStaticImageData,
   resolveImageSrc,
   shouldSkipImageOptimization,
 } from "@/lib/utils/image-src";
 import type { GenderOption } from "@/lib/types/user-profile";
 import { cn } from "@/lib/utils";
+
+function resolveAvatarSource(
+  src: string | StaticImageData | null | undefined,
+  gender?: GenderOption,
+  fallbackSrc?: string | StaticImageData,
+): string | StaticImageData {
+  if (isStaticImageData(src)) {
+    return src;
+  }
+
+  const trimmed = typeof src === "string" ? src.trim() : "";
+  if (trimmed) {
+    return trimmed;
+  }
+
+  if (fallbackSrc) {
+    return fallbackSrc;
+  }
+
+  return getDefaultAvatarForGender(gender);
+}
 
 export function UserAvatar({
   src,
@@ -16,18 +39,16 @@ export function UserAvatar({
   gender,
   fallbackSrc,
 }: {
-  src: string;
+  src?: string | StaticImageData | null;
   alt: string;
   className?: string;
   size?: number;
   gender?: GenderOption;
-  fallbackSrc?: string;
+  fallbackSrc?: string | StaticImageData;
 }) {
-  const resolvedFallback =
-    fallbackSrc ?? getDefaultAvatarForGender(gender);
-  const resolvedSrc = resolveImageSrc(src, resolvedFallback);
+  const finalSrc = resolveAvatarSource(src, gender, fallbackSrc);
 
-  if (!resolvedSrc) {
+  if (!finalSrc) {
     return (
       <div
         className={cn(
@@ -39,16 +60,20 @@ export function UserAvatar({
     );
   }
 
-  const isDataUrl = resolvedSrc.startsWith("data:");
+  const isDataUrl =
+    typeof finalSrc === "string" && finalSrc.startsWith("data:");
 
   return (
     <Image
-      src={resolvedSrc}
+      src={finalSrc}
       alt={alt}
       fill
       className={cn("object-cover", className)}
       sizes={`${size}px`}
-      unoptimized={isDataUrl || shouldSkipImageOptimization(resolvedSrc)}
+      unoptimized={
+        isDataUrl ||
+        (typeof finalSrc === "string" && shouldSkipImageOptimization(finalSrc))
+      }
     />
   );
 }

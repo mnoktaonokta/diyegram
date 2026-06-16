@@ -35,7 +35,6 @@ export function DietitianShell({
           clients={clients}
           userName={displayName || userName}
           userEmail={userEmail}
-          avatarUrl={profileAvatarUrl}
         />
       ) : (
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/80 bg-slate-50/95 px-4 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95">

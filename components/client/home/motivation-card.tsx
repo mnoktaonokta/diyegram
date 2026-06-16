@@ -33,16 +33,17 @@ export function MotivationCard() {
   if (!hasActiveProgram(motivation)) {
     return (
       <>
-        <button
-          type="button"
-          onClick={() => setNewDietOpen(true)}
-          aria-label="Yeni diyete başla"
-          className={cn(
-            "mx-4 mt-4 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5 text-center shadow-sm",
-            "cursor-pointer transition-all hover:bg-slate-800/50 active:scale-[0.98]",
-            "dark:border-slate-800 dark:bg-slate-900/60",
-          )}
-        >
+        <div className="mt-4 px-4">
+          <button
+            type="button"
+            onClick={() => setNewDietOpen(true)}
+            aria-label="Yeni diyete başla"
+            className={cn(
+              "block w-full rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5 text-center shadow-sm",
+              "cursor-pointer transition-all hover:bg-slate-800/50 active:scale-[0.98]",
+              "dark:border-slate-800 dark:bg-slate-900/60",
+            )}
+          >
           <p className="text-2xl">🎯</p>
           <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-zinc-100">
             Henüz diyet programınız başlamadı
@@ -51,6 +52,7 @@ export function MotivationCard() {
             Dokunun ve yeni programınızı hemen başlatın
           </p>
         </button>
+        </div>
 
         <NewDietProgramModal
           open={newDietOpen}

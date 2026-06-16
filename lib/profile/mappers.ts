@@ -1,5 +1,8 @@
+import type { StaticImageData } from "next/image";
+
 import type { Gender } from "@/lib/generated/prisma/client";
 import { getDefaultAvatarForGender } from "@/lib/constants/avatars";
+import { toImageSrc } from "@/lib/utils/image-src";
 import type { UserProfileSettings, GenderOption } from "@/lib/types/user-profile";
 import type { DietitianPublicProfile, DietitianSocialPost } from "@/lib/types/dietitian-social";
 import { sanitizeImageUrls } from "@/lib/types/dietitian-social";
@@ -81,7 +84,7 @@ export function resolveProfileAvatarUrl(
     | null
     | undefined,
   role: Role,
-) {
+): string | StaticImageData {
   if (profile?.avatarUrl?.trim()) {
     return profile.avatarUrl.trim();
   }
@@ -127,7 +130,7 @@ export function mapUserToDietitianPublicProfile(
 
   return {
     name: formatProfileDisplayName(profile),
-    avatarUrl: resolveProfileAvatarUrl(profile, user.role),
+    avatarUrl: toImageSrc(resolveProfileAvatarUrl(profile, user.role)),
     title: profile.professionalTitle,
     bio: profile.bio,
   };
