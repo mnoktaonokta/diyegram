@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { useDietitianSocialProfile } from "@/components/dietitian/social/use-dietitian-social-profile";
 import { useUserProfile } from "@/components/providers/user-profile-provider";
 import type { ClientMealPost } from "@/lib/mock/client-data";
@@ -13,12 +15,12 @@ import { getValidImageUrls } from "@/lib/utils/image-src";
 
 export function MealPostCard({
   post,
-  onDelete,
+  onRemoveImage,
   onAddComment,
   isHighlighted = false,
 }: {
   post: ClientMealPost;
-  onDelete?: () => void;
+  onRemoveImage?: (imageUrl: string) => void;
   onAddComment: (text: string) => void | Promise<void>;
   isHighlighted?: boolean;
 }) {
@@ -28,6 +30,21 @@ export function MealPostCard({
   const currentAuthorName = firstName || displayName || "Danışan";
   const validImages = getValidImageUrls(post.images);
   const hasImages = validImages.length > 0;
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    setCurrentImageIndex((index) =>
+      validImages.length === 0 ? 0 : Math.min(index, validImages.length - 1),
+    );
+  }, [validImages.length]);
+
+  function handleRemoveImage() {
+    const imageUrl = validImages[currentImageIndex];
+
+    if (imageUrl) {
+      onRemoveImage?.(imageUrl);
+    }
+  }
 
   return (
     <article
@@ -47,11 +64,11 @@ export function MealPostCard({
         </div>
       ) : null}
 
-      {post.isUserCreated && onDelete ? (
+      {post.isUserCreated && hasImages && onRemoveImage ? (
         <button
           type="button"
-          onClick={onDelete}
-          aria-label="Gönderiyi sil"
+          onClick={handleRemoveImage}
+          aria-label="Fotoğrafı sil"
           className={cn(
             "absolute right-3 z-10 flex size-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70",
             post.isCheat ? "top-11" : "top-3",
@@ -62,7 +79,11 @@ export function MealPostCard({
       ) : null}
 
       {hasImages ? (
-        <ImageCarousel images={post.images} altPrefix={post.mealType} />
+        <ImageCarousel
+          images={post.images}
+          altPrefix={post.mealType}
+          onSlideChange={setCurrentImageIndex}
+        />
       ) : null}
 
       <div className="flex items-center justify-between px-4 py-3">

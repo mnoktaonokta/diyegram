@@ -19,10 +19,12 @@ export function ImageCarousel({
   images,
   altPrefix,
   aspectClass = "aspect-[4/3]",
+  onSlideChange,
 }: {
   images: string[];
   altPrefix: string;
   aspectClass?: string;
+  onSlideChange?: (index: number) => void;
 }) {
   const validImages = getValidImageUrls(images);
   const [api, setApi] = useState<CarouselApi>();
@@ -33,9 +35,12 @@ export function ImageCarousel({
     if (!api) return;
 
     const onSelect = () => {
-      setCurrent(api.selectedScrollSnap());
+      const index = api.selectedScrollSnap();
+      setCurrent(index);
+      onSlideChange?.(index);
     };
 
+    onSelect();
     api.on("select", onSelect);
     api.on("reInit", onSelect);
 
@@ -43,7 +48,7 @@ export function ImageCarousel({
       api.off("select", onSelect);
       api.off("reInit", onSelect);
     };
-  }, [api]);
+  }, [api, onSlideChange]);
 
   if (count === 0) {
     return (

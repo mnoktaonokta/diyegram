@@ -79,13 +79,17 @@ function CheatToggle({
 
 function MealUploadForm({
   presetIsCheat,
+  presetMealType,
   onClose,
 }: {
   presetIsCheat: boolean;
+  presetMealType: MealTypeKey | null;
   onClose: () => void;
 }) {
   const { addMeal } = useClientDay();
-  const [mealType, setMealType] = useState<UploadMealType>("BREAKFAST");
+  const [mealType, setMealType] = useState<UploadMealType>(
+    presetMealType ?? "BREAKFAST",
+  );
   const [isCheat, setIsCheat] = useState(presetIsCheat);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -316,7 +320,7 @@ function MealUploadForm({
 }
 
 export function MealUploadDrawer() {
-  const { isOpen, presetIsCheat, closeMealUpload, openSessionId } =
+  const { isOpen, presetIsCheat, presetMealType, closeMealUpload, openSessionId } =
     useMealUpload();
 
   return (
@@ -350,6 +354,7 @@ export function MealUploadDrawer() {
             <MealUploadForm
               key={openSessionId}
               presetIsCheat={presetIsCheat}
+              presetMealType={presetMealType}
               onClose={closeMealUpload}
             />
           </motion.div>

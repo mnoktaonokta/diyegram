@@ -392,6 +392,71 @@ export async function deleteMealPostAction(
   }
 }
 
+export async function removeMealPostImageAction(
+  mealPostId: string,
+  imageUrl: string,
+): Promise<ActionResult<{ id: string; deleted: boolean }>> {
+  try {
+    const session = await requireSession();
+
+    if (session.user.role !== "CLIENT") {
+      return { success: false, error: "Yalnızca danışanlar silebilir" };
+    }
+
+    const trimmedImageUrl = imageUrl.trim();
+
+    if (!trimmedImageUrl) {
+      return { success: false, error: "Silinecek fotoğraf bulunamadı" };
+    }
+
+    const post = await prisma.mealPost.findUnique({
+      where: { id: mealPostId },
+      select: {
+        userId: true,
+        isUserCreated: true,
+        images: true,
+        note: true,
+      },
+    });
+
+    if (!post || post.userId !== session.user.id) {
+      return { success: false, error: "Öğün bulunamadı" };
+    }
+
+    if (!post.isUserCreated) {
+      return { success: false, error: "Bu öğün düzenlenemez" };
+    }
+
+    const nextImages = sanitizeImageUrls(
+      post.images.filter((image) => image !== trimmedImageUrl),
+    );
+
+    if (nextImages.length === post.images.length) {
+      return { success: false, error: "Fotoğraf bulunamadı" };
+    }
+
+    const hasRemainingContent =
+      nextImages.length > 0 || Boolean(post.note?.trim());
+
+    if (!hasRemainingContent) {
+      await prisma.mealPost.delete({ where: { id: mealPostId } });
+      revalidateMealPaths();
+      return { success: true, data: { id: mealPostId, deleted: true } };
+    }
+
+    await prisma.mealPost.update({
+      where: { id: mealPostId },
+      data: { images: nextImages },
+    });
+    revalidateMealPaths();
+
+    return { success: true, data: { id: mealPostId, deleted: false } };
+  } catch (error) {
+    console.error("[removeMealPostImageAction]", error);
+    return { success: false, error: "Fotoğraf silinemedi" };
+  }
+}
+
 export async function createMealCommentAction(
   mealPostId: string,
   text: string,

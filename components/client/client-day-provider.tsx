@@ -24,6 +24,7 @@ import {
   createMealCommentAction,
   createMealPostAction,
   deleteMealPostAction,
+  removeMealPostImageAction,
   getClientMealCalendarAction,
   getClientMealsForDateAction,
 } from "@/app/actions/meal";
@@ -67,6 +68,11 @@ type ClientDayContextValue = {
   removeExercise: (exerciseId: string, date?: string) => Promise<void>;
   addMeal: (meal: AddMealInput, date?: string) => Promise<void>;
   removeMeal: (mealId: string, date?: string) => Promise<void>;
+  removeMealImage: (
+    mealId: string,
+    imageUrl: string,
+    date?: string,
+  ) => Promise<void>;
   addMealComment: (
     mealId: string,
     text: string,
@@ -310,6 +316,21 @@ export function ClientDayProvider({ children }: { children: ReactNode }) {
     setMealRefreshToken((token) => token + 1);
   }, []);
 
+  const removeMealImage = useCallback(
+    async (mealId: string, imageUrl: string, date?: unknown) => {
+      void date;
+      const result = await removeMealPostImageAction(mealId, imageUrl);
+
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+
+      setMealRefreshToken((token) => token + 1);
+    },
+    [],
+  );
+
   const addMealComment = useCallback(
     async (
       mealId: string,
@@ -374,6 +395,7 @@ export function ClientDayProvider({ children }: { children: ReactNode }) {
       removeExercise,
       addMeal,
       removeMeal,
+      removeMealImage,
       addMealComment,
     }),
     [
@@ -393,6 +415,7 @@ export function ClientDayProvider({ children }: { children: ReactNode }) {
       refreshMeals,
       removeExercise,
       removeMeal,
+      removeMealImage,
       removeWaterGlass,
       selectedDailyRecord,
       selectedDate,

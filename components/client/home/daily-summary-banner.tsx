@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 
 import { useClientDay } from "@/components/client/client-day-provider";
+import { showWaterAddedToast } from "@/components/client/home/client-action-toasts";
 import { formatExerciseSummary } from "@/lib/mock/client-data";
 import { cn } from "@/lib/utils";
 
@@ -40,8 +41,13 @@ function SummaryChip({
 }
 
 export function DailySummaryBanner() {
-  const { selectedDailyRecord, removeWaterGlass, removeExercise } =
-    useClientDay();
+  const {
+    selectedDailyRecord,
+    removeWaterGlass,
+    removeExercise,
+    addWaterGlass,
+    openExerciseModal,
+  } = useClientDay();
   const { waterGlasses, exercises } = selectedDailyRecord;
 
   return (
@@ -58,12 +64,22 @@ export function DailySummaryBanner() {
           </p>
         </SummaryChip>
       ) : (
-        <SummaryChip className="bg-slate-50 dark:bg-slate-800/60" removeLabel="">
+        <button
+          type="button"
+          onClick={() => {
+            void addWaterGlass().then(() => showWaterAddedToast());
+          }}
+          aria-label="Su ekle"
+          className={cn(
+            "group relative flex shrink-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/60",
+            "cursor-pointer transition-all hover:bg-sky-500/10 active:scale-[0.98]",
+          )}
+        >
           <span className="text-base">💧</span>
           <p className="whitespace-nowrap text-sm text-slate-400 dark:text-zinc-500">
             Su kaydı yok
           </p>
-        </SummaryChip>
+        </button>
       )}
 
       {exercises.length > 0 ? (
@@ -80,11 +96,19 @@ export function DailySummaryBanner() {
           </SummaryChip>
         ))
       ) : (
-        <SummaryChip className="bg-slate-50 dark:bg-slate-800/60" removeLabel="">
+        <button
+          type="button"
+          onClick={openExerciseModal}
+          aria-label="Egzersiz ekle"
+          className={cn(
+            "group relative flex shrink-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/60",
+            "cursor-pointer transition-all hover:bg-amber-400/10 active:scale-[0.98]",
+          )}
+        >
           <p className="whitespace-nowrap text-sm text-slate-400 dark:text-zinc-500">
             Henüz egzersiz kaydı yok
           </p>
-        </SummaryChip>
+        </button>
       )}
     </div>
   );
