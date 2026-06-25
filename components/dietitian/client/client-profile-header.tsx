@@ -1,7 +1,6 @@
-import { Calendar } from "lucide-react";
-
 import { MeasurementMetricsGrid } from "@/components/shared/measurement-metrics-grid";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { ClientAppointmentSection } from "@/components/dietitian/client/client-appointment-section";
 import type { ClientProfile } from "@/lib/mock/dietitian-data";
 import { getClientPersonalInfoLabel } from "@/lib/utils/resolve-client-profile";
 
@@ -29,19 +28,10 @@ export function ClientProfileHeader({ client }: { client: ClientProfile }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 border-t border-slate-100 px-4 py-3 dark:border-slate-800">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-sky-500/10">
-          <Calendar className="size-4 text-sky-600 dark:text-sky-400" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Sıradaki Randevu
-          </p>
-          <p className="truncate text-sm font-bold text-slate-800 dark:text-zinc-100">
-            {client.nextAppointmentDate}
-          </p>
-        </div>
-      </div>
+      <ClientAppointmentSection
+        clientId={client.id}
+        nextAppointmentDate={client.nextAppointmentDate}
+      />
 
       <div className="border-t border-slate-100 p-4 dark:border-slate-800">
         <MeasurementMetricsGrid

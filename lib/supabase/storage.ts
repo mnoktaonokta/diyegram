@@ -186,7 +186,7 @@ export async function uploadFilesToStorage(
   return Promise.all(uploads);
 }
 
-const USER_STORAGE_FOLDERS = ["meals", "progress", "dietitian-posts"] as const;
+const USER_STORAGE_FOLDERS = ["meals", "progress", "dietitian-posts", "diet-lists"] as const;
 
 export async function deleteUserStorageFolder(userId: string) {
   const supabase = createSupabaseStorageClient();

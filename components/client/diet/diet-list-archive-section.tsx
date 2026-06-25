@@ -14,6 +14,7 @@ import { ImageCarousel } from "@/components/shared/image-carousel";
 import { addClientDietListUpload } from "@/lib/storage/client-diet-list-storage";
 import type { DietListUpload } from "@/lib/types/client-diet-list";
 import { processDietListFiles, triggerFileDownload } from "@/lib/utils/diet-list-files";
+import { uploadClientDietListAction } from "@/app/actions/diet-list";
 import { cn } from "@/lib/utils";
 
 function ActiveDietListCard({
@@ -176,6 +177,15 @@ export function DietListArchiveSection() {
     try {
       const processed = await processDietListFiles(files);
       addClientDietListUpload(userId, processed);
+
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      const syncResult = await uploadClientDietListAction(formData);
+
+      if (!syncResult.success) {
+        console.warn("[DietListArchiveSection] DB sync failed:", syncResult.error);
+      }
+
       toast.success("Diyet listesi yüklendi");
     } catch (error) {
       toast.error(
