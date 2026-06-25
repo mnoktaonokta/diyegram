@@ -105,7 +105,7 @@ export function DailySummaryBanner() {
           )}
         >
           <p className="whitespace-nowrap text-sm text-slate-400 transition-colors group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300">
-            Henüz egzersiz kaydı yok · Dokunun
+            Henüz egzersiz kaydı yok
           </p>
         </button>
       )}
