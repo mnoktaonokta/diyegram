@@ -8,7 +8,7 @@ import { useUserProfile } from "@/components/providers/user-profile-provider";
 import { useResolvedFeedPostDeepLink } from "@/components/shared/use-feed-post-deep-link";
 
 import { MealPostCard } from "@/components/client/home/meal-post-card";
-import { cn } from "@/lib/utils";
+import { emptyStateCardClassName } from "@/lib/utils/empty-state-card";
 
 function MealFeedContent() {
   const { mealSections, removeMealImage, addMealComment, isMealsLoading } =
@@ -61,13 +61,10 @@ function MealFeedContent() {
               type="button"
               onClick={() => openMealUpload({ presetMealType: mealType })}
               aria-label={`${label} öğünü ekle`}
-              className={cn(
-                "flex aspect-[4/1] w-full items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white/60 dark:border-slate-800 dark:bg-slate-900/60",
-                "cursor-pointer transition-all hover:border-teal-300 hover:bg-teal-50/50 active:scale-[0.98] dark:hover:border-teal-700 dark:hover:bg-teal-950/20",
-              )}
+              className={emptyStateCardClassName("group flex aspect-[4/1] w-full items-center justify-center rounded-2xl")}
             >
-              <p className="text-sm text-slate-400 dark:text-zinc-500">
-                Henüz öğün eklenmedi
+              <p className="text-sm text-slate-400 transition-colors group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300">
+                Henüz öğün eklenmedi · Dokunun
               </p>
             </button>
           )}

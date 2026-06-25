@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useClientDay } from "@/components/client/client-day-provider";
 import { showWaterAddedToast } from "@/components/client/home/client-action-toasts";
 import { formatExerciseSummary } from "@/lib/mock/client-data";
+import { emptyStateCardClassName } from "@/lib/utils/empty-state-card";
 import { cn } from "@/lib/utils";
 
 function SummaryChip({
@@ -70,14 +71,13 @@ export function DailySummaryBanner() {
             void addWaterGlass().then(() => showWaterAddedToast());
           }}
           aria-label="Su ekle"
-          className={cn(
-            "group relative flex shrink-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/60",
-            "cursor-pointer transition-all hover:bg-sky-500/10 active:scale-[0.98]",
+          className={emptyStateCardClassName(
+            "group relative flex shrink-0 items-center gap-2 rounded-xl px-3 py-2",
           )}
         >
           <span className="text-base">💧</span>
-          <p className="whitespace-nowrap text-sm text-slate-400 dark:text-zinc-500">
-            Su kaydı yok
+          <p className="whitespace-nowrap text-sm text-slate-400 transition-colors group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300">
+            Su kaydı yok · Dokunun
           </p>
         </button>
       )}
@@ -100,13 +100,12 @@ export function DailySummaryBanner() {
           type="button"
           onClick={openExerciseModal}
           aria-label="Egzersiz ekle"
-          className={cn(
-            "group relative flex shrink-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/60",
-            "cursor-pointer transition-all hover:bg-amber-400/10 active:scale-[0.98]",
+          className={emptyStateCardClassName(
+            "group relative flex shrink-0 items-center gap-2 rounded-xl px-3 py-2",
           )}
         >
-          <p className="whitespace-nowrap text-sm text-slate-400 dark:text-zinc-500">
-            Henüz egzersiz kaydı yok
+          <p className="whitespace-nowrap text-sm text-slate-400 transition-colors group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300">
+            Henüz egzersiz kaydı yok · Dokunun
           </p>
         </button>
       )}
